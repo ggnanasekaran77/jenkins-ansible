@@ -1,0 +1,6 @@
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+  - name: include java install playbook
+    include_tasks: installJava.yml
