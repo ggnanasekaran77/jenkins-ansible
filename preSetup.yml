@@ -1,0 +1,20 @@
+--- # Pre Setup
+- name: Install EPEL Repo
+  yum: 
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+- name: Install Docker
+  yum:
+    name: "{{item}}"
+  with_items:
+    - docker
+    - python-pip
+    - docker-python
+
+- name: Docker API expose
+  copy: 
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+  notify:
+    - restart docker
+    

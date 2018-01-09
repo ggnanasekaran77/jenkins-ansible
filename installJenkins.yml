@@ -1,0 +1,18 @@
+--- # Pull Jenkins Image and Run
+
+- name: Building Jenkins Docker Image
+  become: no
+  docker_image:
+    path: "{{ playbook_dir }}"
+    name: ggnanasekaran77/jenkins
+    push: yes
+    force: yes
+
+- name: Starting Jenkins Docker Container
+  docker_container:
+    name: jenkins
+    image: ggnanasekaran77/jenkins
+    recreate: yes
+    pull: yes
+    ports:
+      - 8081:8080
