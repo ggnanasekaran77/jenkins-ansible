@@ -11,6 +11,17 @@
     - python-pip
     - docker-python
 
+- name: Create Dokcer Group
+  group:
+    name: docker
+    state: present 
+
+- name: Adding user to the group
+  user:
+    name: gnanam
+    groups: docker
+    append: yes
+
 - name: Docker API expose
   copy: 
     src: daemon.json
