@@ -1,11 +1,20 @@
-job('Job-DSL-Hello-World-Job') {
-    scm {
-        git('git@github.com:ggnanasekaran77/jenkins.git')
-    }
-    triggers {
-        scm('H/15 * * * *')
-    }
-    steps {
-        shell ('echo "Hello World"')
-    }
+def user = 'ggnanasekaran77'
+def repoApi = new URL("https://api.github.com/users/${user}/repos")
+def repos = new groovy.json.JsonSlurper().parse(repoApi .newReader())
+repos.each {
+    def repoName = it.name
+    println "Repo Name" +  repoName
+    
+   multibranchPipelineJob("${repoName}") {
+       branchSources {
+           git {
+               remote("git@github.com:ggnanasekaran77/${repoName}.git")
+           }
+       }
+       orphanedItemStrategy {
+           discardOldItems {
+               numToKeep(20)
+           }
+       }
+   }
 }
