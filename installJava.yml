@@ -15,19 +15,20 @@
     - app/home
                                                                                   
 - name: Downloading Java                                                    
-  shell: 'wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.tar.gz'                             
+  shell: 'wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz'                             
   args:                                                                     
     chdir: /opt/binary
-  creates: /opt/binary/jdk-8u151-linux-x64.tar.gz
-
-- name: Creating symlink for java
-  file:
-    src: /opt/app/java/jdk1.8.0_151
-    dest: /opt/app/home/java
-    state: link
+  creates: /opt/binary/jdk-8u161-linux-x64.tar.gz
 
 - name: unarchive java binary
   unarchive:
-   src: /opt/binary/jdk-8u151-linux-x64.tar.gz
+   src: /opt/binary/jdk-8u161-linux-x64.tar.gz
    dest: /opt/app/java
-  creates: /opt/app/java/jdk1.8.0_151/bin/java
+  creates: /opt/app/java/jdk1.8.0_161/bin/java
+
+- name: Creating symlink for java
+  file:
+    src: /opt/app/java/jdk1.8.0_161
+    dest: /opt/app/home/java
+    state: link
+

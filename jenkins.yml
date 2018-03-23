@@ -3,10 +3,20 @@
 - hosts: localhost
   connection: local
   become: yes
+
+  vars:
+    JAVA_HOME: /opt/app/home/java
+
+  environment:
+    JAVA_HOME: "{{ JAVA_HOME }}"
   tasks:
 
   - name: execute PreSetup Playbook
     include_tasks: preSetup.yml
+
+  - name: execute installJava.yml
+    include_tasks: installJava.yml
+    tags: installJava
 
   - name: execute installJenkins Playbook
     include_tasks: installJenkins.yml

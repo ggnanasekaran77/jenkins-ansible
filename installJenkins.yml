@@ -16,3 +16,19 @@
     pull: yes
     ports:
       - 8081:8080
+
+- name: Wait for Port to Come up
+  wait_for:
+    port: 8081
+    delay: 10
+
+- name: Waiting for 2 Minutes
+  pause: 
+    minutes: 2
+
+- name: Running Seed Job Groovy
+  shell: ./gradlew rest -DbaseUrl=http://localhost:8081 -Dpattern=jobs/seedJob.groovy -Dusername=admin -Dpassword=admin
+  args:
+    chdir: "{{playbook_dir}}"
+  tags: seedjob
+
