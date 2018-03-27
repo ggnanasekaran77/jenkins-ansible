@@ -8,7 +8,7 @@ repos.each {
    multibranchPipelineJob("${repoName}") {
        branchSources {
            git {
-               remote("git@github.com:ggnanasekaran77/${repoName}.git")
+               remote("https://github.com:ggnanasekaran77/${repoName}.git")
            }
        }
        orphanedItemStrategy {
