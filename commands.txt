@@ -1,0 +1,1 @@
+./gradlew rest -DbaseUrl=http://localhost:8081 -Dpattern=jobs/seedjob.groovy -Dusername=admin -Dpassword=admin

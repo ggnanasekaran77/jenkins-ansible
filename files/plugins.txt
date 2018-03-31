@@ -84,3 +84,7 @@ antisamy-markup-formatter
 pipeline-build-step
 docker-workflow
 ldap
+ansicolor
+ansible-tower
+ansible
+

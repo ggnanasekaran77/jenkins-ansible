@@ -1,0 +1,36 @@
+--- # Pull Jenkins Image and Run
+
+- name: Building Jenkins Docker Image
+  become: no
+  docker_image:
+    path: "{{ playbook_dir }}"
+    name: ggnanasekaran77/jenkins
+    push: yes
+    force: yes
+
+- name: Starting Jenkins Docker Container
+  docker_container:
+    name: jenkins
+    image: ggnanasekaran77/jenkins
+    recreate: yes
+    pull: yes
+    volumes: 
+      - /opt/app/ansible/python27:/opt/app/ansible/python27
+    ports:
+      - 8081:8080
+
+- name: Wait for Port to Come up
+  wait_for:
+    port: 8081
+    delay: 10
+
+- name: Waiting for 2 Minutes
+  pause: 
+    minutes: 2
+
+- name: Running Seed Job Groovy
+  shell: ./gradlew rest -DbaseUrl=http://localhost:8081 -Dpattern=jobs/seedJob.groovy -Dusername=admin -Dpassword=admin
+  args:
+    chdir: "{{playbook_dir}}"
+  tags: seedjob
+

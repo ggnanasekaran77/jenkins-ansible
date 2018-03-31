@@ -1,25 +1,52 @@
 --- # Pull Jenkins Image and Run
 
-- name: Building Jenkins Docker Image
-  become: no
-  docker_image:
-    path: "{{ playbook_dir }}"
-    name: ggnanasekaran77/jenkins
-    push: yes
-    force: yes
-
-- name: Starting Jenkins Docker Container
-  docker_container:
+- name: Adding Jenkins Repo
+  yum_repository:
     name: jenkins
-    image: ggnanasekaran77/jenkins
-    recreate: yes
-    pull: yes
-    ports:
-      - 8081:8080
+    description: Jenkins Stable YUM Repo
+    baseurl: http://pkg.jenkins.io/redhat-stable
+    gpgcheck: yes
+    gpgkey:  https://pkg.jenkins.io/redhat-stable/jenkins.io.key
 
+- name: Installing jenkins
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - java-1.8.0-openjdk.x86_64
+    - jenkins
+
+- name: Creating init.d groovy
+  file:
+    state: directory
+    path: /var/lib/jenkins/init.groovy.d
+    recurse: yes
+
+- name: Copy security groovy script
+  copy:
+    src: security.groovy
+    dest: /var/lib/jenkins/init.groovy.d/security.groovy
+    mode: 0755
+    group: jenkins
+    owner: jenkins
+
+- name: Installing Plugins
+  shell: "{{ playbook_dir }}/install-plugins.sh plugins.txt"
+
+- name: Disable installation steps
+  lineinfile: 
+    path: /etc/sysconfig/jenkins
+    regexp: '^JENKINS_JAVA_OPTIONS'
+    insertafter: EOF
+    line: 'JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
+
+- name: Starting Jenkins
+  service: 
+    name: jenkins
+    state: restarted
+ 
 - name: Wait for Port to Come up
   wait_for:
-    port: 8081
+    port: 8080
     delay: 10
 
 - name: Waiting for 2 Minutes
@@ -27,7 +54,7 @@
     minutes: 2
 
 - name: Running Seed Job Groovy
-  shell: ./gradlew rest -DbaseUrl=http://localhost:8081 -Dpattern=jobs/seedJob.groovy -Dusername=admin -Dpassword=admin
+  shell: ./gradlew rest -DbaseUrl=http://localhost:8080 -Dpattern=jobs/seedJob.groovy -Dusername=admin -Dpassword=admin
   args:
     chdir: "{{playbook_dir}}"
   tags: seedjob
