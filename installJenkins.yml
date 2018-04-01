@@ -29,8 +29,22 @@
     group: jenkins
     owner: jenkins
 
+- name: install-plugins.sh and plugins.txt
+  copy:
+    src: "{{ item }}"
+    dest: "/var/lib/jenkins/{{ item }}"
+    mode: 0755
+    group: jenkins
+    owner: jenkins
+  with_items: 
+    - "install-plugins.sh"
+    - "plugins.txt"
+  
 - name: Installing Plugins
-  shell: "{{ playbook_dir }}/install-plugins.sh plugins.txt"
+  become: yes
+  become_method: sudo
+  become_user: jenkins
+  shell: "/var/lib/jenkins/install-plugins.sh /var/lib/jenkins/plugins.txt"
 
 - name: Disable installation steps
   lineinfile: 
@@ -54,7 +68,7 @@
     minutes: 2
 
 - name: Running Seed Job Groovy
-  shell: ./gradlew rest -DbaseUrl=http://localhost:8080 -Dpattern=jobs/seedJob.groovy -Dusername=admin -Dpassword=admin
+  shell: ./gradlew rest -DbaseUrl=http://localhost:8080 -Dpattern=files/firstseedjob.groovy -Dusername=admin -Dpassword=admin
   args:
     chdir: "{{playbook_dir}}"
   tags: seedjob
